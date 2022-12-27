@@ -10,6 +10,7 @@ interface TimerParams {
   setCurrentMinutes: (param: number) => void;
   setRestTime: (param: boolean) => void;
   setCyclesMade: (param: number) => void;
+  setAlreadyStarted: (param: boolean) => void;
   restTime: boolean;
   cyclesMade: number;
   workingMinutes: number;
@@ -30,6 +31,7 @@ const TimerClock = ({
   workingMinutes,
   restingMinutes,
   quantityOfCycles,
+  setAlreadyStarted,
 }: TimerParams) => {
   const play = () => new Audio(RingSound).play();
   const [workingSeconds, setWorkingSeconds] = useState(currentMinutes * 60);
@@ -89,7 +91,13 @@ const TimerClock = ({
             Recomeçar
           </Button>
         ) : (
-          <Button variant="outlined" onClick={() => setStarted(!started)}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setAlreadyStarted(true);
+              setStarted(!started);
+            }}
+          >
             {started ? "Parar" : "Contar Tempo"}
           </Button>
         )}

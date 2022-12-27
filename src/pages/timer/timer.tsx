@@ -35,6 +35,7 @@ const Timer = () => {
   const [open, setOpen] = React.useState(false);
   const [started, setStarted] = React.useState(false);
   const [value, setValue] = React.useState("1");
+  const [alreadyStarted, setAlreadyStarted] = React.useState(false);
 
   const [workingMinutes, setWorkingMinutes] = React.useState<
     String | undefined | null
@@ -61,7 +62,7 @@ const Timer = () => {
     );
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    if (value == "2") {
+    if (value == "2" && alreadyStarted) {
       handleClickOpen();
     } else {
       setValue(newValue);
@@ -225,6 +226,7 @@ const Timer = () => {
           started={started}
           setStarted={setStarted}
           title={title}
+          setAlreadyStarted={setAlreadyStarted}
         />
       </TabPanel>
 
@@ -246,6 +248,8 @@ const Timer = () => {
           <Button
             onClick={() => {
               setValue("1");
+              setStarted(false);
+              setAlreadyStarted(false);
               handleClose();
             }}
           >

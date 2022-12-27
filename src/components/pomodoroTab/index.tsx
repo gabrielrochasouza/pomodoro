@@ -7,6 +7,7 @@ interface PomodoroParams {
   restingMinutes: Number | any;
   started: boolean;
   setStarted: (param: boolean) => void;
+  setAlreadyStarted: (param: boolean) => void;
   title: String | undefined;
   quantityOfCycles: String | undefined | null;
 }
@@ -18,6 +19,7 @@ const PomodoroTab = ({
   started,
   setStarted,
   title,
+  setAlreadyStarted,
 }: PomodoroParams) => {
   const [cyclesMade, setCyclesMade] = useState(0);
   const [restTime, setRestTime] = useState(false);
@@ -40,6 +42,7 @@ const PomodoroTab = ({
         quantityOfCycles={quantityOfCycles}
         workingMinutes={workingMinutes}
         restingMinutes={restingMinutes}
+        setAlreadyStarted={setAlreadyStarted}
       />
 
       <Grid sx={{ textAlign: "center", marginTop: "16px" }}>
