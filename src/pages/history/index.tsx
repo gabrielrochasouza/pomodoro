@@ -11,9 +11,9 @@ import { useNavigate } from "react-router-dom";
 const History = () => {
   const navigate = useNavigate();
   return (
-    <Container>
-      <Card sx={{ padding: "1rem", margin: "2rem" }}>
-        <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+    <Container sx={{padding: '0'}}>
+      <Card sx={{ padding: "1rem", margin: "2rem 0.2rem 0" }}>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Histórico
         </Typography>
         <CardContent sx={{ textAlign: "center" }}>

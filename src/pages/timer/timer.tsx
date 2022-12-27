@@ -111,7 +111,7 @@ const Timer = () => {
           <Tab disabled={!verifyValidation()} label="Pomodoro" value={"2"} />
         </Tabs>
       </Box>
-      <TabPanel value="1">
+      <TabPanel value="1" sx={{padding:'0'}}>
         <Card
           variant="outlined"
           sx={{ padding: "1.5rem", maxWidth: "800px", margin: "2rem auto 0" }}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Container } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import RingSound from "../../assets/ring.wav";
+import CircularProgressWithLabel from "../circularProgressWithLabel";
 
 interface TimerParams {
   currentMinutes: Number | any;
@@ -18,6 +19,18 @@ interface TimerParams {
   quantityOfCycles: String | null | undefined;
 }
 
+interface workMemoryParam {
+  title?: String;
+  workingMinutes: number;
+  cycles: number;
+  timeFinished: string;
+}
+
+interface historyMemory {
+  date: string;
+  works: workMemoryParam[];
+}
+
 const TimerClock = ({
   currentMinutes,
   started,
@@ -33,6 +46,56 @@ const TimerClock = ({
   quantityOfCycles,
   setAlreadyStarted,
 }: TimerParams) => {
+  const setInHistoryMemory = () => {
+    const arrayObjectToBeSaved: historyMemory[] = [
+      {
+        date: new Date().toLocaleDateString(),
+        works: [
+          {
+            title,
+            timeFinished: new Date().toLocaleTimeString(),
+            workingMinutes,
+            cycles: 1,
+          },
+        ],
+      },
+    ];
+    if (localStorage.getItem("@history")) {
+      const previousMemoryHistory: historyMemory[] =
+        JSON.parse(localStorage.getItem("@history") || "") ||
+        arrayObjectToBeSaved;
+      const alreadyThereIsADate: historyMemory | undefined =
+        previousMemoryHistory?.find(
+          (memo: historyMemory): boolean =>
+            memo.date === new Date().toLocaleDateString()
+        );
+      if (alreadyThereIsADate) {
+        const work: workMemoryParam | undefined =
+          alreadyThereIsADate.works?.find(
+            (work: workMemoryParam): boolean =>
+              work.title === title && work.workingMinutes === workingMinutes
+          );
+        if (work) {
+          work.cycles++;
+          work.timeFinished = new Date().toLocaleTimeString();
+        } else {
+          alreadyThereIsADate.works.push({
+            title,
+            timeFinished: new Date().toLocaleTimeString(),
+            workingMinutes,
+            cycles: 1,
+          });
+        }
+        localStorage.setItem("@history", JSON.stringify(previousMemoryHistory));
+      } else {
+        previousMemoryHistory.push(arrayObjectToBeSaved[0]);
+        localStorage.setItem("@history", JSON.stringify(previousMemoryHistory));
+      }
+    } else {
+      localStorage.setItem("@history", JSON.stringify(arrayObjectToBeSaved));
+    }
+  };
+
   const play = () => new Audio(RingSound).play();
   const [workingSeconds, setWorkingSeconds] = useState(currentMinutes * 60);
   const runTimerWorking = () => {
@@ -40,7 +103,10 @@ const TimerClock = ({
       if (workingSeconds > 0) {
         setWorkingSeconds(workingSeconds - 1);
       } else {
-        if (!restTime) setCyclesMade(cyclesMade + 1);
+        if (!restTime) {
+          setCyclesMade(cyclesMade + 1);
+          setInHistoryMemory();
+        }
         setRestTime(!restTime);
         setWorkingSeconds(
           !restTime ? restingMinutes * 60 : workingMinutes * 60
@@ -78,13 +144,55 @@ const TimerClock = ({
           {Number(quantityOfCycles) === cyclesMade ? (
             <>Finalizado</>
           ) : restTime ? (
-            "Descanse"
+            <>
+              <div>
+                <CircularProgressWithLabel
+                  value={
+                    100 -
+                    100 *
+                      Number(
+                        (
+                          Number(workingSeconds) /
+                          (Number(restingMinutes) * 60)
+                        ).toFixed(2)
+                      )
+                  }
+                />
+              </div>
+              <Typography variant="h6" component={"div"}>
+                {"Descanse"}
+              </Typography>
+            </>
           ) : (
-            <>{title || "Atividade"}</>
+            <>
+              <div>
+                <CircularProgressWithLabel
+                  value={
+                    100 -
+                    100 *
+                      Number(
+                        (
+                          Number(workingSeconds) /
+                          (Number(workingMinutes) * 60)
+                        ).toFixed(2)
+                      )
+                  }
+                />
+              </div>
+              <Typography variant="h6" component={"div"}>
+                {title || "Atividade"}
+              </Typography>
+            </>
           )}
         </h1>
-        <div style={{ fontSize: "4rem", marginBottom: "30px" }}>
-          {currentMinutesString} : {currentSecondsString}{" "}
+        <div
+          style={{
+            fontSize: "4.5rem",
+            marginBottom: "30px",
+            fontWeight: "bold",
+          }}
+        >
+          {currentMinutesString}:{currentSecondsString}{" "}
         </div>
         {Number(quantityOfCycles) === cyclesMade ? (
           <Button variant="outlined" onClick={restart}>
