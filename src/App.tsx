@@ -5,7 +5,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Header from "./components/header";
 import { PaletteMode } from "@mui/material";
-import { amber, deepOrange, grey } from "@mui/material/colors";
+import { deepOrange, grey } from "@mui/material/colors";
+import Provider from "./provider";
 
 function App() {
   const currentTheme =
@@ -47,13 +48,15 @@ function App() {
   );
 
   return (
-    <BrowserRouter>
-      <ThemeProvider theme={darkTheme}>
-        <Header changeTheme={changeTheme} theme={theme} />
-        <CssBaseline />
-        <Routes />
-      </ThemeProvider>
-    </BrowserRouter>
+    <Provider>
+      <BrowserRouter>
+        <ThemeProvider theme={darkTheme}>
+          <Header changeTheme={changeTheme} theme={theme} />
+          <CssBaseline />
+          <Routes />
+        </ThemeProvider>
+      </BrowserRouter>
+    </Provider>
   );
 }
 

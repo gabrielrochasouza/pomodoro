@@ -5,9 +5,10 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import { PaletteMode } from "@mui/material";
+import { Container, PaletteMode } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router-dom";
+import UpdateIcon from "@mui/icons-material/Update";
 
 interface HeaderProps {
   changeTheme?: () => void;
@@ -19,26 +20,34 @@ const Header = ({ changeTheme, theme }: HeaderProps) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="primary">
-        <Toolbar>
-          <Typography
-            onClick={() => navigate("/")}
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, cursor: "pointer" }}
-          >
-            Pomodoro
-          </Typography>
-          <Button
-            onClick={() => navigate("/history")}
-            size="small"
-            color="inherit"
-          >
-            Histórico
-          </Button>
-          <IconButton size="small" color="inherit" onClick={changeTheme}>
-            {theme === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-        </Toolbar>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters sx={{ display: "flex" }}>
+            <UpdateIcon sx={{ display: { md: "flex" }, mr: 1 }} />
+            <Typography
+              noWrap
+              component="a"
+              href="/"
+              variant="h6"
+              sx={{
+                mr: 2,
+                display: { md: "flex" },
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+                bgcolor: "primary",
+              }}
+            >
+              Pomodoro
+            </Typography>
+            <Box sx={{ flexGrow: 1, textAlign: "end" }}>
+              <IconButton size="small" color="inherit" onClick={changeTheme}>
+                {theme === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+            </Box>
+          </Toolbar>
+        </Container>
       </AppBar>
     </Box>
   );

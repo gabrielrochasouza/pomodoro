@@ -1,128 +1,92 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import RingSound from "../../assets/ring.wav";
 import CircularProgressWithLabel from "../circularProgressWithLabel";
+import { setInHistoryMemory } from "../../utils";
+import { useConfig } from "../../provider/config";
+import { usePomodoro } from "../../provider/pomodoro";
 
-interface TimerParams {
-  currentMinutes: Number | any;
-  started: boolean;
-  setStarted: (param: boolean) => void;
-  title: String | undefined;
-  setCurrentMinutes: (param: number) => void;
-  setRestTime: (param: boolean) => void;
-  setCyclesMade: (param: number) => void;
-  setAlreadyStarted: (param: boolean) => void;
-  restTime: boolean;
-  cyclesMade: number;
-  workingMinutes: number;
-  restingMinutes: number;
-  quantityOfCycles: String | null | undefined;
-}
+const TimerClock = () => {
+  const {
+    started,
+    cyclesMade,
+    restTime,
+    alreadyStarted,
+    setStarted,
+    setAlreadyStarted,
+    setCyclesMade,
+    setRestTime,
+  } = usePomodoro();
 
-interface workMemoryParam {
-  title?: String;
-  workingMinutes: number;
-  cycles: number;
-  timeFinished: string;
-}
+  const { quantityOfCycles, title, restingMinutes, workingMinutes } =
+    useConfig();
 
-interface historyMemory {
-  date: string;
-  works: workMemoryParam[];
-}
+  const [workingSeconds, setWorkingSeconds] = useState(
+    Number(workingMinutes) * 60
+  );
 
-const TimerClock = ({
-  currentMinutes,
-  started,
-  setStarted,
-  title,
-  setCurrentMinutes,
-  setRestTime,
-  setCyclesMade,
-  restTime,
-  cyclesMade,
-  workingMinutes,
-  restingMinutes,
-  quantityOfCycles,
-  setAlreadyStarted,
-}: TimerParams) => {
-  const setInHistoryMemory = () => {
-    const arrayObjectToBeSaved: historyMemory[] = [
-      {
-        date: new Date().toLocaleDateString(),
-        works: [
-          {
-            title,
-            timeFinished: new Date().toLocaleTimeString(),
-            workingMinutes,
-            cycles: 1,
-          },
-        ],
-      },
-    ];
-    if (localStorage.getItem("@history")) {
-      const previousMemoryHistory: historyMemory[] =
-        JSON.parse(localStorage.getItem("@history") || "") ||
-        arrayObjectToBeSaved;
-      const alreadyThereIsADate: historyMemory | undefined =
-        previousMemoryHistory?.find(
-          (memo: historyMemory): boolean =>
-            memo.date === new Date().toLocaleDateString()
-        );
-      if (alreadyThereIsADate) {
-        const work: workMemoryParam | undefined =
-          alreadyThereIsADate.works?.find(
-            (work: workMemoryParam): boolean =>
-              work.title === title && work.workingMinutes === workingMinutes
-          );
-        if (work) {
-          work.cycles++;
-          work.timeFinished = new Date().toLocaleTimeString();
-        } else {
-          alreadyThereIsADate.works.push({
-            title,
-            timeFinished: new Date().toLocaleTimeString(),
-            workingMinutes,
-            cycles: 1,
-          });
-        }
-        localStorage.setItem("@history", JSON.stringify(previousMemoryHistory));
-      } else {
-        previousMemoryHistory.push(arrayObjectToBeSaved[0]);
-        localStorage.setItem("@history", JSON.stringify(previousMemoryHistory));
-      }
-    } else {
-      localStorage.setItem("@history", JSON.stringify(arrayObjectToBeSaved));
+  const playStopSound = () => new Audio(RingSound).play();
+
+  const changeMode = () => {
+    setAlreadyStarted(true);
+    setRestTime(!restTime);
+    setWorkingSeconds(
+      !restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
+    );
+    playStopSound();
+    document.title = "Pomodoro";
+  };
+
+  const addCounterCycle = () => {
+    setCyclesMade(cyclesMade + 1);
+    setInHistoryMemory({ title, workingMinutes: Number(workingMinutes) });
+  };
+
+  const runTicTacTimer = () => {
+    if (workingSeconds > 0) {
+      document.title =
+        currentMinutesString + ":" + currentSecondsString + " Pomodoro";
+      setWorkingSeconds(workingSeconds - 1);
+    }
+  };
+  const verifyIfCycleFinished = () => {
+    return workingSeconds === 0;
+  };
+
+  const verifyIfAllCyclesFinished = () =>
+    cyclesMade + 1 === Number(quantityOfCycles);
+
+  const ifAllCyclesAreFinishedGoBackToStartMode = () => {
+    if (verifyIfAllCyclesFinished()) {
+      setWorkingSeconds(Number(workingMinutes) * 60);
+      setAlreadyStarted(false);
+      document.title = "Pomodoro";
     }
   };
 
-  const play = () => new Audio(RingSound).play();
-  const [workingSeconds, setWorkingSeconds] = useState(currentMinutes * 60);
-  const runTimerWorking = () => {
+  const runTimer = () => {
     if (started) {
-      if (workingSeconds > 0) {
-        setWorkingSeconds(workingSeconds - 1);
-      } else {
+      runTicTacTimer();
+      if (verifyIfCycleFinished()) {
         if (!restTime) {
-          setCyclesMade(cyclesMade + 1);
-          setInHistoryMemory();
+          addCounterCycle();
         }
-        setRestTime(!restTime);
-        setWorkingSeconds(
-          !restTime ? restingMinutes * 60 : workingMinutes * 60
-        );
-        play();
+        changeMode(); // modes are work time or rest time
         setStarted(false);
-        if (cyclesMade + 1 === Number(quantityOfCycles))
-          setWorkingSeconds(workingMinutes * 60);
+        ifAllCyclesAreFinishedGoBackToStartMode();
       }
     }
   };
+
   useEffect(() => {
+    if (!alreadyStarted) {
+      document.title = "Pomodoro";
+    }
     setTimeout(() => {
-      runTimerWorking();
+      runTimer();
     }, 1000);
   }, [workingSeconds, started]);
+
   const currentMinutesString = workingSeconds
     ? String(Math.floor(workingSeconds / 60)).padStart(2, "0")
     : "00";
@@ -132,7 +96,7 @@ const TimerClock = ({
 
   const restart = () => {
     setCyclesMade(0);
-    setWorkingSeconds(workingMinutes * 60);
+    setWorkingSeconds(Number(workingMinutes) * 60);
     setRestTime(false);
     setStarted(true);
   };
