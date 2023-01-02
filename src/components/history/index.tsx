@@ -17,9 +17,47 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import WorkIcon from "@mui/icons-material/Work";
+import { Line } from "react-chartjs-2";
+import { getDatesBefore30Days } from "../../utils";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { deepOrange } from "@mui/material/colors";
 
 const History = () => {
   const [historyInfo, setHistoryInfo] = useState<historyMemory[] | null>(null);
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Total de minutos nos últimos 30 dias",
+      },
+    },
+  };
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+
+  const labels = getDatesBefore30Days();
+
   useEffect(() => {
     if (localStorage.getItem("@history")) {
       const obj =
@@ -27,17 +65,36 @@ const History = () => {
         ([] as historyMemory[]);
       const verification = Array.isArray(obj);
       if (verification) {
-        setHistoryInfo(
-          JSON.parse(localStorage.getItem("@history") || "") ||
-            ([] as historyMemory[])
-        );
+        setHistoryInfo(obj);
       }
     }
     document.title = "Pomodoro";
   }, []);
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Minutos",
+        data: labels.map(
+          (res: string): number =>
+            historyInfo
+              ?.find((obj: historyMemory) => obj.date === res)
+              ?.works.reduce(
+                (prev: any, cur: workMemoryParam): number =>
+                  prev + Number(cur.cycles) * Number(cur.workingMinutes),
+                0
+              ) || 0
+        ),
+        borderColor: deepOrange[900],
+        backgroundColor: deepOrange[800],
+      },
+    ],
+  };
+
   return (
     <Container sx={{ padding: "0" }}>
-      <Card sx={{ padding: "1rem 0 ", margin: "2rem 0.2rem 0" }}>
+      <Card sx={{ padding: "1rem 0 ", margin: "2rem 0.2rem 2rem" }}>
         <Typography
           variant="h6"
           component="div"
@@ -127,6 +184,7 @@ const History = () => {
           )}
         </CardContent>
       </Card>
+      {historyInfo?.length && <Line options={options} data={data} />}
     </Container>
   );
 };
