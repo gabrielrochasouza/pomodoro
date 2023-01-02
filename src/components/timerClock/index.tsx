@@ -34,7 +34,7 @@ const TimerClock = () => {
       setStarted(true);
       timerId.current = setInterval(() => {
         setWorkingSeconds((prev) => prev - 1);
-      }, 1000);
+      }, 100);
     }
   };
 
@@ -48,14 +48,18 @@ const TimerClock = () => {
   };
 
   useEffect(() => {
+    Notification.requestPermission();
     setTitle();
     if (workingSeconds === 0) {
       playStopSound();
       stopTimer();
       setRestTime(!restTime);
       if (!restTime) {
+        new Notification("Hora de Descansar");
         setCyclesMade(cyclesMade + 1);
         setInHistoryMemory({ workingMinutes: Number(workingMinutes), title });
+      } else {
+        new Notification("Hora de se Concentrar");
       }
       setWorkingSeconds(
         !restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
