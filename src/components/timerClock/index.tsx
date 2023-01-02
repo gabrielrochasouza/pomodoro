@@ -52,6 +52,7 @@ const TimerClock = () => {
       setRestTime(!restTime);
       if (!restTime) {
         setCyclesMade(cyclesMade + 1);
+        setInHistoryMemory({ workingMinutes: Number(workingMinutes), title });
       }
       setWorkingSeconds(
         !restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
