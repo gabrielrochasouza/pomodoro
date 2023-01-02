@@ -42,6 +42,9 @@ const TimerClock = () => {
     const mode = restTime ? "Descansar" : "Concentrar";
     document.title =
       currentMinutesString + ":" + currentSecondsString + " " + mode;
+    if (cyclesMade === Number(quantityOfCycles)) {
+      document.title = "Pomodoro";
+    }
   };
 
   useEffect(() => {
@@ -118,33 +121,36 @@ const TimerClock = () => {
             </>
           )}
         </h1>
-        <div
-          style={{
-            fontSize: "4.5rem",
-            marginBottom: "30px",
-            fontWeight: "bold",
-          }}
-        >
-          {currentMinutesString}:{currentSecondsString}{" "}
-        </div>
+
         {Number(quantityOfCycles) === cyclesMade ? (
           <Button variant="outlined" onClick={restart}>
             Recomeçar
           </Button>
         ) : (
-          <Button
-            variant="outlined"
-            onClick={() => {
-              setAlreadyStarted(true);
-              if (!started) {
-                startTimer();
-              } else {
-                stopTimer();
-              }
-            }}
-          >
-            {started ? "Parar" : "Contar Tempo"}
-          </Button>
+          <>
+            <div
+              style={{
+                fontSize: "4.5rem",
+                marginBottom: "30px",
+                fontWeight: "bold",
+              }}
+            >
+              {currentMinutesString}:{currentSecondsString}{" "}
+            </div>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setAlreadyStarted(true);
+                if (!started) {
+                  startTimer();
+                } else {
+                  stopTimer();
+                }
+              }}
+            >
+              {started ? "Parar" : "Contar Tempo"}
+            </Button>
+          </>
         )}
       </Box>
     </Container>
