@@ -34,7 +34,7 @@ const TimerClock = () => {
       setStarted(true);
       timerId.current = setInterval(() => {
         setWorkingSeconds((prev) => prev - 1);
-      }, 100);
+      }, 1000);
     }
   };
 
