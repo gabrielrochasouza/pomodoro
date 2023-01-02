@@ -55,11 +55,11 @@ const TimerClock = () => {
       stopTimer();
       setRestTime(!restTime);
       if (!restTime) {
-        new Notification("Hora de Descansar");
+        new Notification("Pomodoro",{ body: "Hora de Descansar", icon: "https://img.icons8.com/color/48/null/clr_watch_2.png" });
         setCyclesMade(cyclesMade + 1);
         setInHistoryMemory({ workingMinutes: Number(workingMinutes), title });
       } else {
-        new Notification("Hora de se Concentrar");
+        new Notification("Pomodoro",{ body: "Hora de se Concentrar", icon: "https://img.icons8.com/color/48/null/clr_watch_2.png" });
       }
       setWorkingSeconds(
         !restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
