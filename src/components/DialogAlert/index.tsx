@@ -30,9 +30,7 @@ const DialogAlert = ({ handleClose, handleConfirm, open }: IDialogAlert) => {
     >
       <DialogTitle>{"Atenção!!"}</DialogTitle>
       <DialogContentText sx={{ padding: "1rem" }}>
-        <DialogContentText id="alert-dialog-slide-description">
-          Isso irá resetar o seu timer
-        </DialogContentText>
+        Isso irá resetar o seu timer
       </DialogContentText>
       <DialogActions>
         <Button onClick={handleClose}>Fechar</Button>

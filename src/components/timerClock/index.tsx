@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import RingSound from "../../assets/ring.wav";
 import CircularProgressWithLabel from "../circularProgressWithLabel";
@@ -16,78 +16,54 @@ const TimerClock = () => {
     setAlreadyStarted,
     setCyclesMade,
     setRestTime,
-    workingSeconds,
-    setWorkingSeconds,
   } = usePomodoro();
 
   const { quantityOfCycles, title, restingMinutes, workingMinutes } =
     useConfig();
 
+  const [workingSeconds, setWorkingSeconds] = useState(
+    Number(workingMinutes) * 60
+  );
+
   const playStopSound = () => new Audio(RingSound).play();
 
-  const changeMode = () => {
-    setAlreadyStarted(true);
-    setRestTime(!restTime);
-    setWorkingSeconds(
-      !restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
-    );
-    playStopSound();
-    document.title = "Pomodoro";
-  };
+  const timerId: any = useRef();
 
-  const addCounterCycle = () => {
-    setCyclesMade(cyclesMade + 1);
-    setInHistoryMemory({ title, workingMinutes: Number(workingMinutes) });
-  };
-
-  const runTicTacTimer = () => {
-    if (workingSeconds > 0) {
-      const currentMode = restTime ? "Descansar" : "Concentrar";
-      document.title =
-        currentMinutesString + ":" + currentSecondsString + " " + currentMode;
-      setWorkingSeconds(workingSeconds - 1);
-    }
-  };
-  const verifyIfCycleFinished = () => {
-    return workingSeconds === 0;
-  };
-
-  const verifyIfAllCyclesFinished = () =>
-    cyclesMade + 1 === Number(quantityOfCycles);
-
-  const ifAllCyclesAreFinishedGoBackToStartMode = () => {
-    if (verifyIfAllCyclesFinished()) {
-      setWorkingSeconds(Number(workingMinutes) * 60);
-      setAlreadyStarted(false);
-      document.title = "Pomodoro";
+  const startTimer = () => {
+    if (!started) {
+      setStarted(true);
+      timerId.current = setInterval(() => {
+        setWorkingSeconds((prev) => prev - 1);
+      }, 1000);
     }
   };
 
-  const runTimer = () => {
-    if (started) {
-      runTicTacTimer();
-      if (verifyIfCycleFinished()) {
-        if (!restTime) {
-          addCounterCycle();
-        }
-        changeMode(); // modes are work time or rest time
-        setStarted(false);
-        ifAllCyclesAreFinishedGoBackToStartMode();
-      }
-    }
+  const setTitle = () => {
+    const mode = restTime ? "Descansar" : "Concentrar";
+    document.title =
+      currentMinutesString + ":" + currentSecondsString + " " + mode;
   };
 
   useEffect(() => {
-    if (!alreadyStarted) {
-      document.title = "Pomodoro";
+    setTitle();
+    if (workingSeconds === 0) {
+      playStopSound();
+      stopTimer();
+      setRestTime(!restTime);
+      if (!restTime) {
+        setCyclesMade(cyclesMade + 1);
+      }
       setWorkingSeconds(
-        restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
+        !restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
       );
     }
-    setTimeout(() => {
-      runTimer();
-    }, 100);
-  }, [workingSeconds, started]);
+  }, [workingSeconds]);
+
+  const stopTimer = () => {
+    setStarted(false);
+
+    clearInterval(timerId.current);
+  };
 
   const currentMinutesString = workingSeconds
     ? String(Math.floor(workingSeconds / 60)).padStart(2, "0")
@@ -159,7 +135,11 @@ const TimerClock = () => {
             variant="outlined"
             onClick={() => {
               setAlreadyStarted(true);
-              setStarted(!started);
+              if (!started) {
+                startTimer();
+              } else {
+                stopTimer();
+              }
             }}
           >
             {started ? "Parar" : "Contar Tempo"}

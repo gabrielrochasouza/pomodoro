@@ -22,7 +22,7 @@ export interface IPomodoro {
     setAlreadyStarted: (param: boolean) => void;
     setCyclesMade: (param: number) => void;
     setRestTime: (param: boolean) => void;
-    setWorkingSeconds: (param: number) => void;
+    setWorkingSeconds: (param: any) => void;
     restart: (param:number) => void;
 }
 export interface workMemoryParam {

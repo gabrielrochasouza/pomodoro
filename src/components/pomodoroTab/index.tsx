@@ -12,9 +12,7 @@ const PomodoroTab = () => {
       <TimerClock />
 
       <Grid sx={{ textAlign: "center", marginTop: "16px" }}>
-        <p>
-          Número de Ciclos: {cyclesMade} / {quantityOfCycles}
-        </p>
+        Número de Ciclos: {cyclesMade} / {quantityOfCycles}
       </Grid>
     </Container>
   );
