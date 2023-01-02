@@ -4,26 +4,32 @@ import Tab from "@mui/material/Tab";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";
 import { Box } from "@mui/material";
-
-import { TransitionProps } from "@mui/material/transitions";
-import Slide from "@mui/material/Slide";
 import PomodoroStepper from "../../components/PomodoroStepper";
 import History from "../../components/history";
-
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import { useConfig } from "../../provider/config";
+import { usePomodoro } from "../../provider/pomodoro";
+import DialogAlert from "../../components/DialogAlert";
 
 const Timer = () => {
   const [value, setValue] = React.useState("1");
+  const [open, setOpen] = React.useState<boolean>(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
+  const { restart, alreadyStarted } = usePomodoro();
+  const { workingMinutes } = useConfig();
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
+    if (value === "1" && alreadyStarted) {
+      handleOpen();
+    } else {
+      setValue(newValue);
+    }
+  };
+
+  const handleConfirm = () => {
+    restart(Number(workingMinutes));
+    setValue("2");
+    handleClose();
   };
 
   return (
@@ -47,33 +53,11 @@ const Timer = () => {
       <TabPanel value="2" sx={{ padding: "0" }}>
         <History />
       </TabPanel>
-      {/* <Dialog
+      <DialogAlert
+        handleClose={handleClose}
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle>{"Atenção!!"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            Isso irá resetar o seu timer
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Fechar</Button>
-          <Button
-            onClick={() => {
-              setValue("1");
-              setStarted(false);
-              setAlreadyStarted(false);
-              handleClose();
-            }}
-          >
-            Continuar
-          </Button>
-        </DialogActions>
-      </Dialog> */}
+        handleConfirm={handleConfirm}
+      />
     </TabContext>
   );
 };

@@ -17,12 +17,13 @@ export interface IPomodoro {
     alreadyStarted: boolean;
     cyclesMade: number;
     restTime: boolean;
-    currentMinutes: number;
+    workingSeconds: number;
     setStarted: (param: boolean) => void;
     setAlreadyStarted: (param: boolean) => void;
     setCyclesMade: (param: number) => void;
     setRestTime: (param: boolean) => void;
-    setCurrentMinutes: (param: number) => void;
+    setWorkingSeconds: (param: number) => void;
+    restart: (param:number) => void;
 }
 export interface workMemoryParam {
     title?: String;
@@ -40,3 +41,9 @@ export interface historyMemory {
     date: string;
     works: workMemoryParam[];
 }
+
+export interface IDialogAlert {
+    handleClose: () => void;
+    open: boolean;
+    handleConfirm: () => void;
+  }

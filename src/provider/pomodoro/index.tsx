@@ -8,20 +8,30 @@ const PomodoroProvider = ({ children }: IProvider) => {
   const [alreadyStarted, setAlreadyStarted] = useState(false);
   const [cyclesMade, setCyclesMade] = useState(0);
   const [restTime, setRestTime] = useState(false);
-  const [currentMinutes, setCurrentMinutes] = useState<number>(0);
+  const [workingSeconds, setWorkingSeconds] = useState(0);
+
+  const restart = (workingMinutes: number) => {
+    setCyclesMade(0);
+    setWorkingSeconds(Number(workingMinutes) * 60);
+    setRestTime(false);
+    setStarted(false);
+    setAlreadyStarted(false);
+  };
+
   return (
     <PomodoroContext.Provider
       value={{
         started,
         cyclesMade,
         restTime,
-        currentMinutes,
         alreadyStarted,
+        workingSeconds,
+        setWorkingSeconds,
         setStarted,
         setAlreadyStarted,
         setCyclesMade,
         setRestTime,
-        setCurrentMinutes,
+        restart,
       }}
     >
       {children}

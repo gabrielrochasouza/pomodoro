@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import RingSound from "../../assets/ring.wav";
 import CircularProgressWithLabel from "../circularProgressWithLabel";
@@ -16,14 +16,12 @@ const TimerClock = () => {
     setAlreadyStarted,
     setCyclesMade,
     setRestTime,
+    workingSeconds,
+    setWorkingSeconds,
   } = usePomodoro();
 
   const { quantityOfCycles, title, restingMinutes, workingMinutes } =
     useConfig();
-
-  const [workingSeconds, setWorkingSeconds] = useState(
-    Number(workingMinutes) * 60
-  );
 
   const playStopSound = () => new Audio(RingSound).play();
 
@@ -44,8 +42,9 @@ const TimerClock = () => {
 
   const runTicTacTimer = () => {
     if (workingSeconds > 0) {
+      const currentMode = restTime ? "Descansar" : "Concentrar";
       document.title =
-        currentMinutesString + ":" + currentSecondsString + " Pomodoro";
+        currentMinutesString + ":" + currentSecondsString + " " + currentMode;
       setWorkingSeconds(workingSeconds - 1);
     }
   };
@@ -81,10 +80,13 @@ const TimerClock = () => {
   useEffect(() => {
     if (!alreadyStarted) {
       document.title = "Pomodoro";
+      setWorkingSeconds(
+        restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
+      );
     }
     setTimeout(() => {
       runTimer();
-    }, 1000);
+    }, 100);
   }, [workingSeconds, started]);
 
   const currentMinutesString = workingSeconds
@@ -94,11 +96,23 @@ const TimerClock = () => {
     ? String(workingSeconds % 60).padStart(2, "0")
     : "00";
 
+  const porcentage = restTime
+    ? 100 -
+      100 *
+        Number(
+          (Number(workingSeconds) / (Number(restingMinutes) * 60)).toFixed(2)
+        )
+    : 100 -
+      100 *
+        Number(
+          (Number(workingSeconds) / (Number(workingMinutes) * 60)).toFixed(2)
+        );
+
   const restart = () => {
     setCyclesMade(0);
     setWorkingSeconds(Number(workingMinutes) * 60);
     setRestTime(false);
-    setStarted(true);
+    setStarted(false);
   };
 
   return (
@@ -110,18 +124,7 @@ const TimerClock = () => {
           ) : restTime ? (
             <>
               <div>
-                <CircularProgressWithLabel
-                  value={
-                    100 -
-                    100 *
-                      Number(
-                        (
-                          Number(workingSeconds) /
-                          (Number(restingMinutes) * 60)
-                        ).toFixed(2)
-                      )
-                  }
-                />
+                <CircularProgressWithLabel value={porcentage} />
               </div>
               <Typography variant="h6" component={"div"}>
                 {"Descanse"}
@@ -130,18 +133,7 @@ const TimerClock = () => {
           ) : (
             <>
               <div>
-                <CircularProgressWithLabel
-                  value={
-                    100 -
-                    100 *
-                      Number(
-                        (
-                          Number(workingSeconds) /
-                          (Number(workingMinutes) * 60)
-                        ).toFixed(2)
-                      )
-                  }
-                />
+                <CircularProgressWithLabel value={porcentage} />
               </div>
               <Typography variant="h6" component={"div"}>
                 {title || "Atividade"}

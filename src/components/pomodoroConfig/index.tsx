@@ -28,7 +28,7 @@ const PomodoroConfig = () => {
   return (
     <Card
       variant="outlined"
-      sx={{ padding: "1.5rem", maxWidth: "800px", margin: "2rem auto 0" }}
+      sx={{ padding: "1.5rem", maxWidth: "800px", margin: "2rem auto 2rem" }}
     >
       <form onSubmit={begin}>
         <FormControl fullWidth required>

@@ -1,12 +1,11 @@
 import {
-  Box,
   Card,
   CardContent,
   Container,
   Divider,
   IconButton,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Typography,
@@ -69,18 +68,21 @@ const History = () => {
                         min
                       </Typography>
                     </AccordionSummary>
-                    <AccordionDetails sx={{ textAlign: "start" }}>
+                    <AccordionDetails sx={{ textAlign: "start", padding: "0" }}>
                       <List
                         component="nav"
-                        aria-label="secondary mailbox folder"
+                        aria-labelledby="nested-list-subheader"
+                        sx={{ padding: "0" }}
                       >
                         {works.map((work: workMemoryParam, i: number) => (
-                          <ListItem
+                          <ListItemButton
                             key={date + ": " + i}
                             alignItems="flex-start"
-                            sx={{ padding: "0" }}
+                            sx={{
+                              padding: "0",
+                              borderBottom: "1px solid grey",
+                            }}
                           >
-                            <Divider />
                             <ListItemIcon>
                               <IconButton edge="end" aria-label="delete">
                                 <WorkIcon />
@@ -106,7 +108,7 @@ const History = () => {
                               }
                             />
                             <Divider />
-                          </ListItem>
+                          </ListItemButton>
                         ))}
                       </List>
                     </AccordionDetails>

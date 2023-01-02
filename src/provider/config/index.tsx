@@ -20,6 +20,7 @@ const ConfigProvider = ({ children }: IProvider) => {
   const [title, setTitle] = React.useState(
     localStorage.getItem("@title") || ""
   );
+
   const verifyValidation = () => {
     return (
       workingMinutes &&

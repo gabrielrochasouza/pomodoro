@@ -1,6 +1,6 @@
 import { ISetHistoryMemory, historyMemory, workMemoryParam } from '../interfaces';
 
-export const setInHistoryMemory = ({title, workingMinutes}:ISetHistoryMemory ) => {
+export const setInHistoryMemory = ({title= 'Atividade', workingMinutes}:ISetHistoryMemory ) => {
     const arrayObjectToBeSaved: historyMemory[] = [
       {
         date: new Date().toLocaleDateString(),

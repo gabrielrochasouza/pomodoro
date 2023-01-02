@@ -8,13 +8,26 @@ import { Container } from "@mui/material";
 import PomodoroConfig from "../pomodoroConfig";
 import PomodoroTab from "../pomodoroTab";
 import { useConfig } from "../../provider/config";
+import { usePomodoro } from "../../provider/pomodoro";
+import DialogAlert from "../DialogAlert";
 
 const steps = ["Configurar", "Rodar o timer"];
 
 const PomodoroStepper = () => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set<number>());
-  const { verifyValidation } = useConfig();
+  const { verifyValidation, workingMinutes } = useConfig();
+  const { restart, alreadyStarted } = usePomodoro();
+
+  const [open, setOpen] = React.useState<boolean>(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleConfirm = () => {
+    restart(Number(workingMinutes));
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    handleClose();
+  };
 
   const isStepSkipped = (step: number) => {
     return skipped.has(step);
@@ -31,7 +44,11 @@ const PomodoroStepper = () => {
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    if (activeStep === 1 && alreadyStarted) {
+      handleOpen();
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    }
   };
 
   return (
@@ -84,6 +101,11 @@ const PomodoroStepper = () => {
           </Box>
         </React.Fragment>
       </Box>
+      <DialogAlert
+        handleClose={handleClose}
+        handleConfirm={handleConfirm}
+        open={open}
+      />
     </Container>
   );
 };
