@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import RingSound from "../../assets/ring.wav";
 import CircularProgressWithLabel from "../circularProgressWithLabel";
-import { setInHistoryMemory } from "../../utils";
+import { setInHistoryMemory, notifyMe } from "../../utils";
 import { useConfig } from "../../provider/config";
 import { usePomodoro } from "../../provider/pomodoro";
 
@@ -48,18 +48,20 @@ const TimerClock = () => {
   };
 
   useEffect(() => {
-    Notification.requestPermission();
+    if (!alreadyStarted) {
+      Notification.requestPermission();
+    }
     setTitle();
     if (workingSeconds === 0) {
       playStopSound();
       stopTimer();
       setRestTime(!restTime);
       if (!restTime) {
-        new Notification("Pomodoro",{ body: "Hora de Descansar", icon: "https://img.icons8.com/color/48/null/clr_watch_2.png" });
+        notifyMe("Hora de Descansar");
         setCyclesMade(cyclesMade + 1);
         setInHistoryMemory({ workingMinutes: Number(workingMinutes), title });
       } else {
-        new Notification("Pomodoro",{ body: "Hora de se Concentrar", icon: "https://img.icons8.com/color/48/null/clr_watch_2.png" });
+        notifyMe("Hora de se Concentrar");
       }
       setWorkingSeconds(
         !restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
