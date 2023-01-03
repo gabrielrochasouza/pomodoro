@@ -48,7 +48,7 @@ const TimerClock = () => {
   };
 
   useEffect(() => {
-    if (!alreadyStarted) {
+    if (!alreadyStarted && "Notification" in window) {
       Notification.requestPermission();
     }
     setTitle();
