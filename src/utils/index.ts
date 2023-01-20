@@ -68,30 +68,32 @@ export const getDatesBefore30Days = () => {
 };
 
 export const notifyMe = (message: string) => {
-  if (!("Notification" in window)) {
-    // Check if the browser supports notifications
-  } else if (Notification.permission === "granted") {
-    // Check whether notification permissions have already been granted;
-    // if so, create a notification
-    const notification = new Notification("Pomodoro", {
-      body: message,
-      icon: "https://img.icons8.com/color/48/null/clr_watch_2.png",
-    });
-    // …
-  } else if (Notification.permission !== "denied") {
-    // We need to ask the user for permission
-    Notification.requestPermission().then((permission) => {
-      // If the user accepts, let's create a notification
-      if (permission === "granted") {
-        const notification = new Notification("Pomodoro", {
-          body: message,
-          icon: "https://img.icons8.com/color/48/null/clr_watch_2.png",
-        });
-        // …
-      }
-    });
+  if(window.innerWidth > 800) {
+    if (!("Notification" in window)) {
+      // Check if the browser supports notifications
+    } else if (Notification.permission === "granted") {
+      // Check whether notification permissions have already been granted;
+      // if so, create a notification
+      const notification = new Notification("Pomodoro", {
+        body: message,
+        icon: "https://img.icons8.com/color/48/null/clr_watch_2.png",
+      });
+      // …
+    } else if (Notification.permission !== "denied") {
+      // We need to ask the user for permission
+      Notification.requestPermission().then((permission) => {
+        // If the user accepts, let's create a notification
+        if (permission === "granted") {
+          const notification = new Notification("Pomodoro", {
+            body: message,
+            icon: "https://img.icons8.com/color/48/null/clr_watch_2.png",
+          });
+          // …
+        }
+      });
+    }
+  
+    // At last, if the user has denied notifications, and you
+    // want to be respectful there is no need to bother them anymore.
   }
-
-  // At last, if the user has denied notifications, and you
-  // want to be respectful there is no need to bother them anymore.
 };
