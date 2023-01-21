@@ -22,7 +22,7 @@ const TimerClock = () => {
     useConfig();
 
   const [workingSeconds, setWorkingSeconds] = useState(
-    Number(workingMinutes) * 60
+    Math.round(Number(workingMinutes) * 60)
   );
 
   const playStopSound = () => new Audio(RingSound).play();
@@ -42,7 +42,7 @@ const TimerClock = () => {
     const mode = restTime ? "Descansar" : "Concentrar";
     document.title =
       currentMinutesString + ":" + currentSecondsString + " " + mode;
-    if (cyclesMade === Number(quantityOfCycles)) {
+    if (cyclesMade === Math.round(Number(quantityOfCycles))) {
       document.title = "Pomodoro";
     }
   };
@@ -59,12 +59,17 @@ const TimerClock = () => {
       if (!restTime) {
         notifyMe("Hora de Descansar");
         setCyclesMade(cyclesMade + 1);
-        setInHistoryMemory({ workingMinutes: Number(workingMinutes), title });
+        setInHistoryMemory({
+          workingMinutes: Math.round(Number(workingMinutes)),
+          title,
+        });
       } else {
         notifyMe("Hora de se Concentrar");
       }
       setWorkingSeconds(
-        !restTime ? Number(restingMinutes) * 60 : Number(workingMinutes) * 60
+        !restTime
+          ? Math.round(Number(restingMinutes) * 60)
+          : Math.round(Number(workingMinutes) * 60)
       );
     }
   }, [workingSeconds]);
@@ -96,7 +101,7 @@ const TimerClock = () => {
 
   const restart = () => {
     setCyclesMade(0);
-    setWorkingSeconds(Number(workingMinutes) * 60);
+    setWorkingSeconds(Math.round(Number(workingMinutes) * 60));
     setRestTime(false);
     setStarted(false);
   };
@@ -105,7 +110,7 @@ const TimerClock = () => {
     <Container>
       <Box sx={{ textAlign: "center" }}>
         <h1 style={{ fontSize: "1.5rem" }}>
-          {Number(quantityOfCycles) === cyclesMade ? (
+          {Math.round(Number(quantityOfCycles)) === cyclesMade ? (
             <>Finalizado</>
           ) : restTime ? (
             <>
@@ -128,7 +133,7 @@ const TimerClock = () => {
           )}
         </h1>
 
-        {Number(quantityOfCycles) === cyclesMade ? (
+        {Math.round(Number(quantityOfCycles)) === cyclesMade ? (
           <Button variant="outlined" onClick={restart}>
             Recomeçar
           </Button>
